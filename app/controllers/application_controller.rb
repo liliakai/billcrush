@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  config.relative_url_root = ""
+
   rescue_from ActionController::RoutingError, :with => :render_404
   rescue_from ActionController::UnknownAction, :with => :render_404
   rescue_from ActiveRecord::RecordNotFound, :with => :render_404
