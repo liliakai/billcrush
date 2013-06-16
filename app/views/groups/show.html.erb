@@ -6,7 +6,7 @@
         <h3>New transaction</h3>
         <table style="float:left;margin:0 0 20px">
           <tr>
-            <td colspan=4 style=padding-right:10px>
+            <td colspan=2 style=padding-right:10px>
               <p><%= tf.label :description %></p>
               <%= tf.text_field :description, {:size => 1, :style => 'width:100%'} %>
             <td style=padding-right:10px>
@@ -16,30 +16,38 @@
               <p><%= tf.label :amount %></p>
               $ <%= tf.text_field :amount, {:size => 6} %>
           <tr>
-            <td style=padding-right:10px>
-              <p>Pay to</p>
-              <table id=payers>
-                <% @members.each_with_index do |member,i| %>
-                  <tr userId=<%= member.to_param %>>
-                    <td>
-                      <%= label_tag "payer#{member.to_param}", ' ' + member.name %>
-                    <td>
-                      <input type=checkbox checked id=payer<%= member.to_param %>><%= label_tag %>
-                      $ <%= text_field_tag "payer[members][#{member.to_param}]", '', {:size => 6, :class => "auto", :id => "payer-amount-#{i}"} %>
-                <% end %>
-              </table>
+            <td colspan=2 style=padding-right:10px>
+              <div class=no_select>
+                <p style='padding:5px 0'>
+                  Split between
+                </p>
+                <table id=split>
+                  <% @members.each_with_index do |member,i| %>
+                    <tr userId=<%= member.to_param %>>
+                      <td style=padding-right:10px;>
+                        <input type=checkbox checked id=split<%= member.to_param %>>
+                        <%= label_tag "split#{member.to_param}", ' ' + member.name %>
+                      <td>
+                        $ <%= text_field_tag "transaction[members][#{member.to_param}]", '', {:size => 6, :class => "auto", :id => "transaction-amount-#{i}"} %>
+                  <% end %>
+                </table>
+              </div>
             <td colspan=2>
-              <p>Owed by</p>
-              <table id=split>
-                <% @members.each_with_index do |member,i| %>
-                  <tr userId=<%= member.to_param %>>
-                    <td>
-                      <%= label_tag "split#{member.to_param}", ' ' + member.name %>
-                    <td>
-                      <input type=checkbox checked id=split<%= member.to_param %>><%= label_tag %>
-                      $ <%= text_field_tag "transaction[members][#{member.to_param}]", '', {:size => 6, :class => "auto", :id => "transaction-amount-#{i}"} %>
-                <% end %>
-              </table>
+              <div style=float:right;>
+                <p style='padding:5px 0'>
+                  Collected by
+                </p>
+                <table id=payers>
+                  <% @members.each_with_index do |member,i| %>
+                    <tr userId=<%= member.to_param %>>
+                      <td style=padding-right:10px;>
+                        <input type=checkbox <%= 'checked' if cookies[@group.id.to_s + '_last_payer'] == member.to_param %> id=payer<%= member.to_param %>>
+                        <%= label_tag "payer#{member.to_param}", ' ' + member.name %>
+                      <td>
+                        $ <%= text_field_tag "transaction[payers][#{member.to_param}]", '', {:size => 6, :class => "auto", :id => "payer-amount-#{i}"} %>
+                  <% end %>
+                </table>
+              </div>
         </table>
         <p style=clear:both;height:31px>
         <p style=position:absolute;bottom:24px>
