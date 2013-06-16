@@ -140,6 +140,7 @@
       <% end %>
       <tr class=b>
         <td>
+        <td>
         <td>Total
         <td><%= money(@transactions.reduce(0){|s, t| s + t.amount}) %>
         <% @group.members.each do |member|%>
