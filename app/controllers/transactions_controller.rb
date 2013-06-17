@@ -2,7 +2,7 @@ class TransactionsController < ApplicationController
   before_filter :load_group
 
   def create
-    payer = @group.members.find(params[:transaction][:payer])
+    payer = @group.members.find(params[:transaction][:payers].first[0])
     cookies[@group.id.to_s + '_last_payer'] = payer.id
     # create inactive so we can create the associated debts
     amount = amount_cents(params[:transaction][:amount])
@@ -11,7 +11,12 @@ class TransactionsController < ApplicationController
                                              :amount => amount,
                                              :active => false, :settlement => params[:transaction][:settlement])
     if @transaction.save
-      @transaction.credits.create!(:member => payer, :amount_cents => amount, :active => false)
+      params[:transaction][:payers].each_pair do |id, amount|
+        next unless amount.present?
+        payer = @group.members.find(id)
+        cred_amount = amount_cents(amount)
+        @transaction.credits.create!(:member => payer, :amount_cents => cred_amount, :active => false)
+      end
       params[:transaction][:members].each_pair do |id, amount|
         debtor = @group.members.find(id)
         debt_amount = amount_cents(amount)
