@@ -305,15 +305,15 @@ $(function() {
       }
     }
   };
-  var updateSplit = function() {
+  var updateItems = function(items) {
     if (amount.val() === '') {
-      _.each(splitItems, function(item) { item.val('') });
+      _.each(items, function(item) { item.val('') });
     } else {
       var total = Math.round(amount.val() * 100),
-          manualTotal = _.reduce(splitItems, function(memo, item) {
+          manualTotal = _.reduce(items, function(memo, item) {
               return memo + ((!item.auto() && item.val()) ? item.val() : 0);
             }, 0),
-          autoItems = _.select(splitItems, function(item) {
+          autoItems = _.select(items, function(item) {
             return item.on() && item.auto();
           }),
           splitAmount = total - manualTotal,
@@ -325,9 +325,17 @@ $(function() {
         item.val(split + ((remain-- > 0) ? 1 : 0));
       });
     }
+  }
+
+  var updateSplit = function() {
+    updateItems(splitItems);
+    updateItems(payerItems);
   };
+
   var splitRows = $('#split tr'),
       splitItems = _.map(splitRows, function(row) { return new SplitItem($(row)) }),
+      payerRows = $('#payers tr'),
+      payerItems = _.map(payerRows, function(row) { return new SplitItem($(row)) }),
       amount = $('#transaction_amount'),
       payer = $('#transaction_payer'),
       description = $('#transaction_description')
@@ -338,6 +346,7 @@ $(function() {
   var newTransaction = function() {
     setDate();
     _.each(splitItems, function(item) { item.on('true').val('') });
+    _.each(payerItems, function(item) { item.on('true').val('') });
   }
   $('#new_transaction').bind('reset', function() {
     setTimeout(newTransaction, 1);
