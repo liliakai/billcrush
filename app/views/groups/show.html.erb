@@ -365,10 +365,20 @@ $(function() {
         item.auto(autoSplit).val(debitAmount);
       }
     });
-    // Assume exactly one credit per transaction
-    credit = transaction.credits[0];
-    payer.val(credit[0]);
-    amount.val(money_no_unit(credit[1] / 100));
+
+    _.each(payerItems, function(item) { item.on(false) });
+    _.each(transaction.credits, function(credit) {
+      var item = _.find(payerItems, function(item){ return item.userId == credit[0].toString()});
+      var creditAmount = credit[1];
+      if (creditAmount != 0) {
+        item.auto(autoSplit).val(creditAmount);
+      }
+    });
+
+    var total = _.reduce(transaction.credits, function(memo, credit) {
+      return memo + credit[1];
+    }, 0);
+    amount.val(money_no_unit(total / 100));
     description.val(transaction.description);
   };
   bc.duplicateTransaction = duplicateTransaction;
