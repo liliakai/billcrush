@@ -81,7 +81,7 @@
           <% @group.best_way_to_settle.each do |settlement| %>
             <li><%= settlement[:payer].name %> pays <%= settlement[:payee].name %> <%= money(settlement[:amount]) %> - 
             <%= form_for :transaction, :url => group_transactions_url(@group), :html => {:style => 'display:inline', :class => "settlement-form"} do |f| %>
-                <%= f.hidden_field(:payer, :value => settlement[:payer].to_param) %>
+                <%= hidden_field_tag "transaction[payers][#{settlement[:payer].to_param}]", settlement[:amount].to_f / 100 %>
                 <%= f.hidden_field(:settlement, :value => '1') %>
                 <%= f.hidden_field(:amount, :value => settlement[:amount].to_f / 100) %>
                 <%= f.hidden_field(:description, :value => "#{settlement[:payer].name} settled with #{settlement[:payee].name}") %>
